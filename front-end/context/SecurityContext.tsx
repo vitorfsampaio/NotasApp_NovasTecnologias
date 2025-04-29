@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useCallback } from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as Location from 'expo-location';
 import { Alert, Platform } from 'react-native';
-import { SecurityContact } from '@/types';
+import { SecurityContact } from '../types';
 import Communications from 'react-native-communications';
 
 // Only import EncryptedStorage on native platforms

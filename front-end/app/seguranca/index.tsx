@@ -11,8 +11,8 @@ import {
   Switch
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSecurity } from '@/hooks/useSecurity';
-import { SecurityContact } from '@/types';
+import { useSecurity } from '../../hooks/useSecurity';
+import { SecurityContact } from '../../types';
 import { ArrowLeft, Plus, Trash2, Phone } from 'lucide-react-native';
 import Animated, { 
   FadeInDown, 

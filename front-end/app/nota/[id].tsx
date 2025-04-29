@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, TextInput, View, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useNotes } from '@/hooks/useNotes';
-import { useSecurity } from '@/hooks/useSecurity';
-import { Note } from '@/types';
+import { useNotes } from '../../hooks/useNotes';
+import { useSecurity } from '../../hooks/useSecurity';
+import { Note } from '../../types';
 import { ArrowLeft, Trash2 } from 'lucide-react-native';
 
 export default function NoteDetailScreen() {

@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useSecurity } from '@/hooks/useSecurity';
+import { useSecurity } from '../hooks/useSecurity';
 import { useRouter } from 'expo-router';
 
 interface AppHeaderProps {

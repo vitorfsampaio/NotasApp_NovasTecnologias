@@ -1,5 +1,5 @@
 import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
-import { useNotes } from '@/hooks/useNotes';
+import { useNotes } from '../../hooks/useNotes';
 import NoteItem from '@/components/NoteItem';
 import AppHeader from '@/components/AppHeader';
 import { Plus } from 'lucide-react-native';

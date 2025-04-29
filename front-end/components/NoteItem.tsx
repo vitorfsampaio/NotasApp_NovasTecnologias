@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Note } from '@/types';
-import { getRelativeTime } from '@/utils/dateUtils';
+import { Note } from '../types';
+import { getRelativeTime } from '../utils/dateUtils';
 
 interface NoteItemProps {
   note: Note;
