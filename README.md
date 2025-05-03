@@ -76,13 +76,11 @@ Inicie o servidor de desenvolvimento:
 	"longitude": -1.00 
 }
 ```
-> nome = String
-> 
-> numero = String
-> 
-> latitude = Float
-> 
-> longitude = Float
+**Tipo de dados**
+- nome: `String`
+- numero: `String`
+- latitude: `Float`
+- longitude: `Float`
 
 
 
