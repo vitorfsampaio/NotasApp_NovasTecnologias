@@ -1,7 +1,8 @@
 import React, { useRef, useCallback, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { useSecurity } from '../hooks/useSecurity';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface AppHeaderProps {
   title: string;
@@ -56,21 +57,27 @@ export default function AppHeader({ title }: AppHeaderProps) {
   }, [authenticateForSecurityAccess, router]);
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={handleTitlePress} 
-        activeOpacity={0.9}
-        style={styles.titleContainer}
-      >
-        <Text style={styles.title}>{title}</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <View style={styles.container}>
+        <TouchableOpacity 
+          onPress={handleTitlePress} 
+          activeOpacity={0.9}
+          style={styles.titleContainer}
+        >
+          <Text style={styles.title}>{title}</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#FFFFFF',
+  },
   container: {
-    height: 60,
+    height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

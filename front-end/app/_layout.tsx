@@ -7,6 +7,7 @@ import { NotesProvider } from '@/context/NotesContext';
 import { SecurityProvider } from '@/context/SecurityContext';
 import { useFonts } from 'expo-font';
 import { SplashScreen } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -35,16 +36,19 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SecurityProvider>
-        <NotesProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </NotesProvider>
-      </SecurityProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SecurityProvider>
+          <NotesProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="nota/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="seguranca/index" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="auto" />
+          </NotesProvider>
+        </SecurityProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

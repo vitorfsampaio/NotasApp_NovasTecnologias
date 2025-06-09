@@ -5,11 +5,14 @@ import { Alert, Platform } from 'react-native';
 import { SecurityContact } from '../types';
 import Communications from 'react-native-communications';
 
-// Only import EncryptedStorage on native platforms
-let EncryptedStorage: any = null;
+// Import EncryptedStorage conditionally
+let EncryptedStorage: any;
 if (Platform.OS !== 'web') {
-  // Dynamic import to prevent web build errors
-  EncryptedStorage = require('react-native-encrypted-storage').default;
+  try {
+    EncryptedStorage = require('react-native-encrypted-storage').default;
+  } catch (error) {
+    console.error('Failed to load react-native-encrypted-storage:', error);
+  }
 }
 
 interface SecurityContextProps {
@@ -52,8 +55,11 @@ const storage = {
     try {
       if (Platform.OS === 'web') {
         return localStorage.getItem(key);
-      } else {
+      } else if (EncryptedStorage) {
         return await EncryptedStorage.getItem(key);
+      } else {
+        console.warn('EncryptedStorage is not available');
+        return null;
       }
     } catch (error) {
       console.error(`Error getting item ${key}:`, error);
@@ -65,8 +71,10 @@ const storage = {
     try {
       if (Platform.OS === 'web') {
         localStorage.setItem(key, value);
-      } else {
+      } else if (EncryptedStorage) {
         await EncryptedStorage.setItem(key, value);
+      } else {
+        console.warn('EncryptedStorage is not available');
       }
     } catch (error) {
       console.error(`Error setting item ${key}:`, error);
