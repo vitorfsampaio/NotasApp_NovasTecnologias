@@ -3,17 +3,8 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as Location from 'expo-location';
 import { Alert, Platform } from 'react-native';
 import { SecurityContact } from '../types';
-import Communications from 'react-native-communications';
-
-// Import EncryptedStorage conditionally
-let EncryptedStorage: any;
-if (Platform.OS !== 'web') {
-  try {
-    EncryptedStorage = require('react-native-encrypted-storage').default;
-  } catch (error) {
-    console.error('Failed to load react-native-encrypted-storage:', error);
-  }
-}
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { enviarLigacaoEmergencia } from '@/utils/api';
 
 interface SecurityContextProps {
   safetyKeyword: string;
@@ -49,35 +40,20 @@ interface SecurityProviderProps {
   children: React.ReactNode;
 }
 
-// Platform-specific storage implementation
+// Persistência: AsyncStorage no mobile, localStorage no web
 const storage = {
   async getItem(key: string): Promise<string | null> {
-    try {
-      if (Platform.OS === 'web') {
-        return localStorage.getItem(key);
-      } else if (EncryptedStorage) {
-        return await EncryptedStorage.getItem(key);
-      } else {
-        console.warn('EncryptedStorage is not available');
-        return null;
-      }
-    } catch (error) {
-      console.error(`Error getting item ${key}:`, error);
-      return null;
+    if (Platform.OS === 'web') {
+      return localStorage.getItem(key);
+    } else {
+      return await AsyncStorage.getItem(key);
     }
   },
-
   async setItem(key: string, value: string): Promise<void> {
-    try {
-      if (Platform.OS === 'web') {
-        localStorage.setItem(key, value);
-      } else if (EncryptedStorage) {
-        await EncryptedStorage.setItem(key, value);
-      } else {
-        console.warn('EncryptedStorage is not available');
-      }
-    } catch (error) {
-      console.error(`Error setting item ${key}:`, error);
+    if (Platform.OS === 'web') {
+      localStorage.setItem(key, value);
+    } else {
+      await AsyncStorage.setItem(key, value);
     }
   }
 };
@@ -192,63 +168,54 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
 
   // Protocolo de emergência
   const triggerEmergencyProtocol = useCallback(async () => {
-    if (contacts.length === 0) return;
+    if (contacts.length === 0) {
+      Alert.alert('Emergência', 'Nenhum contato de emergência cadastrado.');
+      return;
+    }
 
     try {
-      let locationMessage = '';
-      
+      let latitude = null;
+      let longitude = null;
+      let nome = 'Usuário';
+
       if (sendLocationEnabled) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();
-          
           if (status === 'granted') {
             const location = await Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.High,
             });
-            
-            const { latitude, longitude } = location.coords;
-            const googleMapsUrl = `https://maps.google.com/maps?q=${latitude},${longitude}`;
-            
-            locationMessage = `Minha localização atual: ${googleMapsUrl}`;
+            latitude = location.coords.latitude;
+            longitude = location.coords.longitude;
           }
         } catch (error) {
           console.error('Erro ao obter localização:', error);
         }
       }
-      
-      // Communication functions may not be available on web
-      if (Platform.OS !== 'web') {
-        // Envia SMS para todos os contatos
-        const message = `EMERGÊNCIA: Estou em perigo e preciso de ajuda. ${locationMessage}`;
-        
-        // Envia SMS para cada contato (silenciosamente)
-        contacts.forEach(contact => {
-          try {
-            Communications.text(contact.phone, message);
-          } catch (error) {
-            console.error('Erro ao enviar SMS:', error);
-          }
+
+      const contato = contacts[0];
+      if (!contato) {
+        Alert.alert('Emergência', 'Nenhum contato de emergência cadastrado.');
+        return;
+      }
+
+      // Chama o backend
+      try {
+        await enviarLigacaoEmergencia({
+          numero: contato.phone,
+          latitude: latitude ?? 0,
+          longitude: longitude ?? 0,
+          nome: contato.name || 'Usuário',
         });
-        
-        // Se a opção de ligação estiver habilitada e houver contatos, liga para o primeiro
-        if (makeCallEnabled && contacts.length > 0) {
-          try {
-            setTimeout(() => {
-              Communications.phonecall(contacts[0].phone, false);
-            }, 1000); // Atrasa a chamada em 1 segundo após os SMS
-          } catch (error) {
-            console.error('Erro ao fazer ligação:', error);
-          }
-        }
-      } else {
-        console.log('Emergency protocol triggered on web platform (SMS/call functionality not available)');
-        // For web, you could implement a different emergency protocol
-        // For example, displaying an emergency modal or sending a web notification
+        Alert.alert('Emergência', 'Ligação e SMS de emergência enviados com sucesso!');
+      } catch (error: any) {
+        Alert.alert('Erro', error.message || 'Erro ao acionar emergência.');
       }
     } catch (error) {
       console.error('Erro no protocolo de emergência:', error);
+      Alert.alert('Erro', 'Erro inesperado ao acionar emergência.');
     }
-  }, [contacts, sendLocationEnabled, makeCallEnabled]);
+  }, [contacts, sendLocationEnabled]);
 
   // Save security settings whenever any of the relevant states change
   useEffect(() => {

@@ -36,14 +36,24 @@ const SegurancaScreen: React.FC = () => {
       }
       return;
     }
+    // Validação: telefone deve ser +55 seguido de 10 ou 11 dígitos
+    const phone = newContactPhone.trim();
+    if (!/^\+55\d{10,11}$/.test(phone)) {
+      if (typeof window !== 'undefined') {
+        alert('Digite um telefone válido com DDD e número.');
+      } else {
+        // Alert para mobile já está na view
+      }
+      return;
+    }
     const newContact = {
       id: Date.now().toString(),
       name: newContactName.trim(),
-      phone: newContactPhone.trim().replace(/\D/g, ''),
+      phone,
     };
     addContact(newContact);
     setNewContactName('');
-    setNewContactPhone('');
+    setNewContactPhone('+55');
     setShowAddContact(false);
   }, [newContactName, newContactPhone, addContact]);
 

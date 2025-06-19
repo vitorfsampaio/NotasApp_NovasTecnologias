@@ -5,6 +5,7 @@ import NoteItem from '@/components/NoteItem';
 import EmptyNotes from '@/components/EmptyNotes';
 import { Plus } from 'lucide-react-native';
 import { Note } from './model';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface NotasViewProps {
   notes: Note[];
@@ -13,7 +14,12 @@ interface NotasViewProps {
 }
 
 const NotasView: React.FC<NotasViewProps> = ({ notes, onCreateNote, renderItem }) => (
-  <View style={styles.container}>
+  <LinearGradient
+    colors={["#f8fafc", "#e0e7ef"]}
+    style={styles.background}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+  >
     <AppHeader title="Notas" />
     <FlatList
       data={notes}
@@ -21,31 +27,49 @@ const NotasView: React.FC<NotasViewProps> = ({ notes, onCreateNote, renderItem }
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.notesContainer}
       ListEmptyComponent={EmptyNotes}
+      showsVerticalScrollIndicator={false}
     />
     <TouchableOpacity 
       style={styles.addButton}
       onPress={onCreateNote}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
     >
-      <Plus color="#FFFFFF" size={24} />
+      <LinearGradient
+        colors={["#0074D9", "#00C6FB"]}
+        style={styles.addButtonGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Plus color="#FFFFFF" size={28} />
+      </LinearGradient>
     </TouchableOpacity>
-  </View>
+  </LinearGradient>
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  notesContainer: { flexGrow: 1, padding: 16 },
+  background: { flex: 1 },
+  notesContainer: { flexGrow: 1, padding: 20, paddingBottom: 40 },
   addButton: {
     position: 'absolute',
-    right: 24,
-    bottom: 32,
-    backgroundColor: '#0074D9',
+    right: 28,
+    bottom: 36,
     borderRadius: 32,
-    width: 56,
-    height: 56,
+    width: 64,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
+    elevation: 6,
+    shadowColor: '#0074D9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+  },
+  addButtonGradient: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
