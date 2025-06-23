@@ -222,7 +222,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     if (isInitialized) {
       saveSecuritySettings();
     }
-  }, [safetyKeyword, contacts, sendLocationEnabled, makeCallEnabled, isInitialized, saveSecuritySettings]);
+  }, [safetyKeyword, contacts, sendLocationEnabled, makeCallEnabled, isInitialized]);
 
   return (
     <SecurityContext.Provider

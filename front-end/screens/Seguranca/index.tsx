@@ -36,22 +36,29 @@ const SegurancaScreen: React.FC = () => {
       }
       return;
     }
-    // Validação: telefone deve ser +55 seguido de 10 ou 11 dígitos
+    
+    // Validação simplificada: telefone deve ter pelo menos 10 dígitos
     const phone = newContactPhone.trim();
-    if (!/^\+55\d{10,11}$/.test(phone)) {
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    if (digitsOnly.length < 10) {
       if (typeof window !== 'undefined') {
-        alert('Digite um telefone válido com DDD e número.');
+        alert('Digite um telefone válido com DDD e número (mínimo 10 dígitos).');
       } else {
         // Alert para mobile já está na view
       }
       return;
     }
+    
     const newContact = {
       id: Date.now().toString(),
       name: newContactName.trim(),
-      phone,
+      phone: phone.startsWith('+55') ? phone : `+55${digitsOnly}`,
     };
+    
     addContact(newContact);
+    
+    // Limpa os campos
     setNewContactName('');
     setNewContactPhone('+55');
     setShowAddContact(false);
@@ -66,8 +73,6 @@ const SegurancaScreen: React.FC = () => {
       safetyKeyword={safetyKeyword}
       setSafetyKeyword={setSafetyKeyword}
       contacts={contacts}
-      addContact={addContact}
-      removeContact={removeContact}
       sendLocationEnabled={sendLocationEnabled}
       setSendLocationEnabled={setSendLocationEnabled}
       makeCallEnabled={makeCallEnabled}
