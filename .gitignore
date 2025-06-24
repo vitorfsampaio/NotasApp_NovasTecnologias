@@ -160,3 +160,4 @@ back-end/.pytype/
 back-end/.pypirc
 
 .idea/
+node_modules
